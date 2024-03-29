@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\PostResource;
 use App\Http\Traits\ApiResponseTrait;
@@ -59,12 +60,18 @@ class PostController extends Controller
     public function update(UpdatePostRequest $request, Post $post)
     {
         try {
-            $post->update([
-                'title'     => $request->title,
-                'body'      => $request->body,
-            ]);
+            DB::beginTransaction();
+                if ($request->has('title')) {
+                    $post->title = $request->title;
+                }
+                if ($request->has('body')) {
+                    $post->body = $request->body;
+                }
+                $post->save();
+            DB::commit();
             return $this->customeResponse(new PostResource($post),"Post updated successfully",200);
         } catch (\Throwable $th) {
+            DB::rollback();
             Log::error($th);
             return $this->customeResponse(null,"Error!!,there is something not correct",500);
         }
