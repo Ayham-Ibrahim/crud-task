@@ -60,7 +60,6 @@ class PostController extends Controller
     public function update(UpdatePostRequest $request, Post $post)
     {
         try {
-            DB::beginTransaction();
                 if ($request->has('title')) {
                     $post->title = $request->title;
                 }
@@ -68,10 +67,8 @@ class PostController extends Controller
                     $post->body = $request->body;
                 }
                 $post->save();
-            DB::commit();
             return $this->customeResponse(new PostResource($post),"Post updated successfully",200);
         } catch (\Throwable $th) {
-            DB::rollback();
             Log::error($th);
             return $this->customeResponse(null,"Error!!,there is something not correct",500);
         }
