@@ -23,8 +23,8 @@ class UpdatePostRequest extends FormRequest
     {
 
             return [
-                'title'  => 'nullable|stirng|min=3|max=20',
-                'body'  => 'nullable|string|min=4|max=2080',  
+                'title' => ['nullable','string','max:255',],
+                'body' => ['nullable','string'],  
             ];
 
     }
